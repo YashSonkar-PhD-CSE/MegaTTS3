@@ -1,0 +1,6 @@
+*.cpy
+*.pyc
+*.pt
+*.ckpt
+*.bin
+checkpoints/*
