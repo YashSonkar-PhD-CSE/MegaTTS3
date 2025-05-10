@@ -4,3 +4,6 @@
 *.ckpt
 *.bin
 checkpoints/*
+checkpoints/*
+gen/*
+*__pycache__*

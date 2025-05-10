@@ -42,7 +42,7 @@ if "TOKENIZERS_PARALLELISM" not in os.environ:
 def convert_to_wav(wav_path):
     # Check if the file exists
     if not os.path.exists(wav_path):
-        print(f"The file '{wav_path}' does not exist.")
+        print(f"The file '{wav_path}' does not exist.", flush=True)
         return
 
     # Check if the file already has a .wav extension
@@ -54,7 +54,7 @@ def convert_to_wav(wav_path):
         audio = AudioSegment.from_file(wav_path)
         audio.export(out_path, format="wav")
 
-        print(f"Converted '{wav_path}' to '{out_path}'")
+        print(f"Converted '{wav_path}' to '{out_path}'", flush=True)
 
 
 def cut_wav(wav_path, max_len=28):
@@ -271,15 +271,23 @@ if __name__ == '__main__':
         file_content = file.read()
         
     textFiles = os.listdir(input_dir)
-    
+    readFiles = os.listdir('/ssd_scratch/cvit/yash/MegaTTS3/gen/')
+    readFiles = [r.replace(".wav", '.txt') for r in readFiles]
+    unreadFiles = []
+    for textFile in textFiles:
+        if textFile in readFiles:
+            continue
+        unreadFiles.append(textFile)
+    texts = {}
+    for textFile in unreadFiles:
+        with open(os.path.join(input_dir, textFile), 'rt') as readFile:
+            texts[textFile] = readFile.read().strip()
+    print("Total files: {}, Read files: {}, Unread files: {}".format(len(textFiles), len(readFiles), len(unreadFiles)))
     os.makedirs(out_path, exist_ok=True)
-    for input_file in textFiles:
-        input_text = ""
-        with open(os.path.join(input_dir, input_file), "rt") as text_file:
-            input_text = text_file.read().strip()
-        print(f"| Start processing {wav_path}+{input_text}")
+    for inputFile, inputText in texts.items():
+        print(f"| Start processing {wav_path}+{inputText}", flush=True)
         resource_context = infer_ins.preprocess(file_content, latent_file=wav_path.replace('.wav', '.npy'))
-        wav_bytes = infer_ins.forward(resource_context, input_text, time_step=time_step, p_w=p_w, t_w=t_w)
-        out_file = input_file.replace('.txt', '.wav')
-        print(f"| Saving results to {out_path}/{out_file}")
+        wav_bytes = infer_ins.forward(resource_context, inputText, time_step=time_step, p_w=p_w, t_w=t_w)
+        out_file = inputFile.replace('.txt', '.wav')
+        print(f"| Saving results to {out_path}/{out_file}", flush=True)
         save_wav(wav_bytes, f'{out_path}/{out_file}')
