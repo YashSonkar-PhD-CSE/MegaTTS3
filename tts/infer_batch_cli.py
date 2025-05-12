@@ -142,6 +142,7 @@ class MegaTTS3DiTInfer():
         from transformers import AutoTokenizer, AutoModelForCausalLM
         g2p_tokenizer = AutoTokenizer.from_pretrained(self.g2p_exp_name, padding_side="right")
         g2p_tokenizer.padding_side = "right"
+        print(self.g2p_exp_name)
         self.g2p_model = AutoModelForCausalLM.from_pretrained(self.g2p_exp_name).eval().to(device)
         self.g2p_tokenizer = g2p_tokenizer
         self.speech_start_idx = g2p_tokenizer.encode('<Reserved_TTS_0>')[0]
@@ -282,7 +283,7 @@ if __name__ == '__main__':
     for textFile in unreadFiles:
         with open(os.path.join(input_dir, textFile), 'rt') as readFile:
             texts[textFile] = readFile.read().strip()
-    print("Total files: {}, Read files: {}, Unread files: {}".format(len(textFiles), len(readFiles), len(unreadFiles)))
+    print("Total files: {}, Read files: {}, Unread files: {}, Num files to process: {}".format(len(textFiles), len(readFiles), len(unreadFiles), len(texts)))
     os.makedirs(out_path, exist_ok=True)
     for inputFile, inputText in texts.items():
         print(f"| Start processing {wav_path}+{inputText}", flush=True)
