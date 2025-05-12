@@ -1,3 +1,9 @@
+*.cpy
+*.pyc
+*.pt
+*.ckpt
+*.bin
+checkpoints/*
 checkpoints/*
 gen/*
 *__pycache__*
